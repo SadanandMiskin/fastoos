@@ -25,7 +25,6 @@ const ArcSection: React.FC<ArcSectionProps> = ({
   onClick,
   isOuter = false,
   fillId,
-  // hoverFillId,
 }) => {
   const centerX = 150;
   const centerY = 150;
@@ -51,14 +50,12 @@ const ArcSection: React.FC<ArcSectionProps> = ({
     Z
   `;
 
-  // Calculate label position and orientation
   const midAngle = (startAngle + endAngle) / 2;
   const midRad = (midAngle * Math.PI) / 180;
   const labelRadius = isOuter ? 180 : (innerRadius + outerRadius) / 2;
   const labelX = centerX + labelRadius * Math.cos(midRad);
   const labelY = centerY + labelRadius * Math.sin(midRad);
 
-  // Determine text orientation
   const textRotation = midAngle > 90 && midAngle < 270 ? midAngle + 180 : midAngle;
   const textAnchor = 'middle';
   const dominantBaseline = 'middle';
@@ -115,15 +112,15 @@ export default function GearShiftWheel() {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
+  const [isVideoReady, setIsVideoReady] = useState<boolean>(false);
   const [userInteracted, setUserInteracted] = useState<boolean>(false);
   const [showEnterButton, setShowEnterButton] = useState<boolean>(true);
+  const [showBlackFade, setShowBlackFade] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const preloaderRef = useRef<HTMLDivElement>(null);
   const progressBarRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
   const enterButtonRef = useRef<HTMLButtonElement>(null);
-  const [showBlackFade, setShowBlackFade] = useState<boolean>(false); // New state for black fade
-
 
   const gearOptions = [
     { id: 'A', label: 'A', startAngle: 180, endAngle: 240, page: 'About' },
@@ -136,19 +133,17 @@ export default function GearShiftWheel() {
   const handleSectionClick = (section: string, page: string): void => {
     console.log(`Selected gear ${section} - ${page}`);
     setIsNavigating(true);
-    setShowBlackFade(true); // Show black fade when section is clicked
+    setShowBlackFade(true);
 
-    // Wait for the fade-out animation to complete before navigating
     setTimeout(() => {
       navigate(`/${page.toLowerCase()}`);
-    }, 500); // Match this duration with your CSS transition
+    }, 500);
   };
 
   const handleEnterClick = () => {
     setUserInteracted(true);
     setShowEnterButton(false);
 
-    // Enable video with audio
     if (videoRef.current) {
       videoRef.current.muted = false;
       videoRef.current.play().catch(console.error);
@@ -156,10 +151,9 @@ export default function GearShiftWheel() {
   };
 
   const startLoadingAnimation = () => {
-    // Simulate loading animation without GSAP
     let progress = 0;
     const interval = setInterval(() => {
-      progress += 2;
+      progress += 1;
       setLoadingProgress(progress);
 
       if (progressBarRef.current) {
@@ -168,55 +162,58 @@ export default function GearShiftWheel() {
 
       if (progress >= 100) {
         clearInterval(interval);
-        setTimeout(() => {
-          setIsLoaded(true);
-        }, 500);
       }
-    }, 50);
+    }, 70);
   };
 
   useEffect(() => {
-    // Initial setup
     if (progressBarRef.current) {
       progressBarRef.current.style.transform = 'scaleX(0)';
       progressBarRef.current.style.transformOrigin = 'left center';
       progressBarRef.current.style.transition = 'transform 0.1s ease';
     }
 
-    // Start loading animation only after user interaction
     if (userInteracted) {
       startLoadingAnimation();
     }
-
-    // Load video in the background
-    if (videoRef.current && userInteracted) {
-      videoRef.current.addEventListener('canplaythrough', () => {
-        // Video is ready to play
-      });
-
-      videoRef.current.addEventListener('progress', () => {
-        if (videoRef.current) {
-          const buffered = videoRef.current.buffered;
-          if (buffered.length > 0) {
-            const loadedPercentage = (buffered.end(0) / videoRef.current.duration) * 100;
-            setLoadingProgress(Math.min(loadedPercentage, 100));
-          }
-        }
-      });
-    }
-
-    return () => {
-      if (videoRef.current) {
-        videoRef.current.removeEventListener('canplaythrough', () => {});
-        videoRef.current.removeEventListener('progress', () => {});
-      }
-    };
   }, [userInteracted]);
+
+  useEffect(() => {
+    if (videoRef.current && userInteracted) {
+      const video = videoRef.current;
+
+      const handleCanPlay = () => {
+        setIsVideoReady(true);
+      };
+
+      const handleProgress = () => {
+        if (video.buffered.length > 0) {
+          const loadedPercentage = (video.buffered.end(0) / video.duration) * 100;
+          setLoadingProgress(prev => Math.max(prev, Math.min(loadedPercentage, 100)));
+        }
+      };
+
+      video.addEventListener('canplay', handleCanPlay);
+      video.addEventListener('progress', handleProgress);
+
+      return () => {
+        video.removeEventListener('canplay', handleCanPlay);
+        video.removeEventListener('progress', handleProgress);
+      };
+    }
+  }, [userInteracted]);
+
+  useEffect(() => {
+    if (loadingProgress >= 100 && isVideoReady) {
+      setTimeout(() => {
+        setIsLoaded(true);
+      }, 500);
+    }
+  }, [loadingProgress, isVideoReady]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gray-900">
-      {/* Background Video - Hidden until loaded */}
-        <AnimatePresence>
+      <AnimatePresence>
         {showBlackFade && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -227,6 +224,7 @@ export default function GearShiftWheel() {
           />
         )}
       </AnimatePresence>
+
       <video
         ref={videoRef}
         autoPlay={false}
@@ -238,23 +236,22 @@ export default function GearShiftWheel() {
           isLoaded ? (isNavigating ? 'opacity-0' : 'opacity-100') : 'opacity-0'
         }`}
         style={{ zIndex: 0 }}
+        onCanPlay={() => setIsVideoReady(true)}
       >
         <source src="/a.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
-      {/* Preloader */}
       {!isLoaded && (
         <div
           ref={preloaderRef}
           className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-yellow-300 text-gray-900"
         >
           <div className="text-center max-w-md px-4">
-            <h1 className="text-9xl font-bold text-red-800 font-stretch-100% cur tracking-wider mb-8" ref={textRef}>
+            <h1 className="text-9xl font-bold text-red-800 font-stretch-100% cur tracking-wider mb-8 animate-fade-in" ref={textRef}>
               Fastoos
             </h1>
 
-            {/* Enter Button - Show initially */}
             {showEnterButton && (
               <div className="mb-8">
                 <button
@@ -270,13 +267,12 @@ export default function GearShiftWheel() {
               </div>
             )}
 
-            {/* Loading UI - Show after Enter is clicked */}
             {userInteracted && (
               <>
                 <h2
-                  className="text-3xl md:text-4xl font-bold mb-6 tracking-wider opacity-100"
+                  className="text-xl md:text-xl font-bold mb-6  opacity-100 tracking-wider"
                   style={{
-                    animation: 'fadeInUp 1.8s ease-out'
+                    animation: 'fadeInUp 7.8s ease-out'
                   }}
                 >
                   GET READY FOR A NEW EXPERIENCE
@@ -290,7 +286,8 @@ export default function GearShiftWheel() {
                 </div>
 
                 <p className="text-gray-600 text-sm tracking-wider mb-8">
-                  Loading premium experience {loadingProgress}%
+                  Loading {loadingProgress}%
+                  {!isVideoReady && " (buffering video)"}
                 </p>
               </>
             )}
@@ -298,18 +295,15 @@ export default function GearShiftWheel() {
         </div>
       )}
 
-      {/* Main Content - Only visible after loading */}
       <div className={`relative z-20 min-h-screen transition-opacity duration-1000 ${
         isLoaded ? 'opacity-100' : 'opacity-0'
       }`}>
-        {/* Brand Elements */}
         <div className="absolute top-8 left-8 z-10">
           <div className="text-white text-sm tracking-[0.2em] uppercase font-medium">
             Fastoos
           </div>
         </div>
 
-        {/* Main Interactive Element */}
         <div className="relative z-20 min-h-screen flex items-center justify-center p-4">
           <div
             className="relative flex items-center justify-center mt-96"
@@ -327,7 +321,6 @@ export default function GearShiftWheel() {
               className="absolute top-0 left-0 overflow-visible"
             >
               <defs>
-                {/* Light mode gradients */}
                 <linearGradient id="innerArcFill_light" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="gray" />
                   <stop offset="100%" stopColor="white" />
@@ -353,7 +346,6 @@ export default function GearShiftWheel() {
                 </filter>
               </defs>
 
-              {/* Render Gear Options */}
               {gearOptions.map(gear => (
                 <ArcSection
                     key={gear.id}
@@ -372,7 +364,6 @@ export default function GearShiftWheel() {
                 />
               ))}
 
-              {/* Active Gear Indicator */}
               {activeOuterArcData && (
                 <ArcSection
                     key={`${activeOuterArcData.id}-outer`}
@@ -393,7 +384,6 @@ export default function GearShiftWheel() {
               )}
             </svg>
 
-            {/* Central Gear Shift Knob */}
             <button
                 onClick={() => setIsExpanded(!isExpanded)}
                 className={`
@@ -426,7 +416,6 @@ export default function GearShiftWheel() {
                 {hoveredSection ? 'Selected' : 'Select Gear'}
               </div>
 
-              {/* Gear pattern */}
               <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
                 isExpanded ? 'opacity-100' : 'opacity-0'
               }`}>
@@ -436,7 +425,6 @@ export default function GearShiftWheel() {
               </div>
             </button>
 
-            {/* Animated background rings */}
             <div
               className={`
                 absolute top-1/2 left-1/2 rounded-full
@@ -456,19 +444,6 @@ export default function GearShiftWheel() {
           </div>
         </div>
       </div>
-
-      {/* <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style> */}
     </div>
   );
 }

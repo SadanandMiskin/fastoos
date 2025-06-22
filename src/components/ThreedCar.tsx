@@ -8,13 +8,14 @@ import Configurator from '../components/Car/Configurator'
 import { useCustomization } from '../contexts/Customization'
 import Details from '../components/Car/Details'
 import { useEffect, useRef, useState } from 'react'
-// import type { MutableRefObject } from 'react'
 
 const ThreedCar = () => {
   const { Brake, rotation } = useCustomization();
   const cameraRef = useRef<PerspectiveCameraImpl>(null)
   const bgColorRef = useRef<HTMLDivElement>(null)
+  const loadingRef = useRef<HTMLDivElement>(null)
   const [bgColor, setBgColor] = useState('rgb(167, 167, 167)')
+  const [loading, setLoading] = useState(true);
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -22,7 +23,6 @@ const ThreedCar = () => {
 
   useEffect(() => {
     if (cameraRef.current) {
-      // Create a position object that GSAP can animate
       const position = {
         x: cameraRef.current.position.x,
         y: cameraRef.current.position.y,
@@ -73,6 +73,28 @@ const ThreedCar = () => {
     }
   }, [rotation])
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (loadingRef.current) {
+        // Animate the loading div to fade out
+        gsap.to(loadingRef.current, {
+          opacity: 0,
+          duration: 0.5,
+          ease: "power2.out",
+          onComplete: () => {
+            // After animation completes, set loading to false
+            setLoading(false);
+          }
+        });
+      } else {
+        // Fallback in case ref isn't available
+        setLoading(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <div
@@ -80,6 +102,15 @@ const ThreedCar = () => {
         ref={bgColorRef}
         style={{ background: bgColor }}
       >
+        <div
+          ref={loadingRef}
+          className={`fixed inset-0 flex items-center justify-center z-50 bg-white transition-opacity ${!loading ? 'pointer-events-none' : ''}`}
+        >
+          <div className="text-center">
+            <h1 className="text-8xl font-bold text-red-800 font-stretch-100% cur">Fastoos</h1>
+            <p className="text-2xl font-medium mb-4 animate-pulse">Loading 3D experience...</p>
+          </div>
+        </div>
         <Canvas
           onWheel={handleWheel}
           style={{ touchAction: 'none', background: 'transparent' }}

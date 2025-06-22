@@ -2,34 +2,28 @@ import { OrbitControls, MeshReflectorMaterial, Stage } from "@react-three/drei";
 import { Suspense, useEffect, useRef } from "react";
 import Car1 from "./Car1";
 import { useCustomization } from "../../contexts/Customization";
-// Import your audio file
-import backgroundMusic from "../../assets/audio/bg.mp3"; // Adjust the path to your audio file
-// import FastLoader from "../Loader/Loader";
-import ShortLoader from "../Loader/ShortLoader";
+import backgroundMusic from "../../assets/audio/bg.mp3";
+import { ShortLoader } from "../Loader/ShortLoader"; // Import your new loader
 
 const Scene: React.FC = () => {
   const { car } = useCustomization();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Initialize audio when component mounts
     audioRef.current = new Audio(backgroundMusic);
-    audioRef.current.loop = true; // Set to loop infinitely
-    audioRef.current.volume = 0.3; // Set volume to 30% (adjust as needed)
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.3;
 
-    // Play audio (note: some browsers may block autoplay until user interaction)
     const playAudio = async () => {
       try {
         await audioRef.current?.play();
       } catch (err) {
         console.log("Audio playback failed:", err);
-        // You might want to add a button to allow users to start audio manually
       }
     };
 
     playAudio();
 
-    // Cleanup when component unmounts
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();

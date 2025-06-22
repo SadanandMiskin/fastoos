@@ -88,7 +88,7 @@ const WikipediaPage: React.FC = () => {
     }
 
     tl.from(imageRef.current, {
-      rotateY: 90, // Changed from rotationY to rotateY
+      rotateY: 90,
       opacity: 0,
       transformOrigin: "left center",
       duration: 1,
@@ -141,32 +141,35 @@ const WikipediaPage: React.FC = () => {
       );
     }
 
-    switch (linkType) {
-      case 'art':
-        if (artPreviewRef.current) {
-          gsap.fromTo(artPreviewRef.current,
-            { y: 20, opacity: 0 },
-            { y: 0, opacity: 1, duration: 0.4, delay: 0.1, ease: "back.out(1.7)" }
-          );
-        }
-        break;
-      case 'pdf':
-        if (pdfPreviewRef.current) {
-          gsap.fromTo(pdfPreviewRef.current,
-            { x: 20, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.4, delay: 0.1, ease: "elastic.out(1, 0.5)" }
-          );
-        }
-        break;
-      case 'video':
-        if (videoPreviewRef.current) {
-          gsap.fromTo(videoPreviewRef.current,
-            { rotate: -5, opacity: 0 }, // Changed from rotation to rotate
-            { rotate: 0, opacity: 1, duration: 0.4, delay: 0.1, ease: "sine.out" }
-          );
-        }
-        break;
-    }
+    // Animate specific preview content based on type
+    setTimeout(() => {
+      switch (linkType) {
+        case 'art':
+          if (artPreviewRef.current) {
+            gsap.fromTo(artPreviewRef.current,
+              { y: 20, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.4, ease: "back.out(1.7)" }
+            );
+          }
+          break;
+        case 'pdf':
+          if (pdfPreviewRef.current) {
+            gsap.fromTo(pdfPreviewRef.current,
+              { x: 20, opacity: 0 },
+              { x: 0, opacity: 1, duration: 0.4, ease: "elastic.out(1, 0.5)" }
+            );
+          }
+          break;
+        case 'video':
+          if (videoPreviewRef.current) {
+            gsap.fromTo(videoPreviewRef.current,
+              { rotate: -5, opacity: 0 },
+              { rotate: 0, opacity: 1, duration: 0.4, ease: "sine.out" }
+            );
+          }
+          break;
+      }
+    }, 100);
   };
 
   const handleLinkLeave = () => {
@@ -182,101 +185,59 @@ const WikipediaPage: React.FC = () => {
 
   const previewContent = {
     art: (
-      <motion.div
-        ref={artPreviewRef}
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="p-4"
-      >
+      <div ref={artPreviewRef} className="p-4">
         <h3 className="text-lg font-semibold mb-2 text-amber-800">Porsche 911 Gallery Preview</h3>
         <div className="grid grid-cols-2 gap-2">
-          {[100, 200, 300, 400].map((shade, i) => (
-            <motion.div
-              key={i}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.1 + i * 0.05 }}
-              className={`bg-amber-${shade} h-24 w-full rounded-sm`}
-            ></motion.div>
-          ))}
+          <div className="bg-amber-100 h-24 w-full rounded-sm flex items-center justify-center">
+            {/* <span className="text-amber-600 text-xs">Classic 911</span> */}
+          </div>
+          <div className="bg-amber-200 h-24 w-full rounded-sm flex items-center justify-center">
+            {/* <span className="text-amber-700 text-xs">911 Turbo</span> */}
+          </div>
+          <div className="bg-amber-300 h-24 w-full rounded-sm flex items-center justify-center">
+            {/* <span className="text-amber-800 text-xs">911 GT3</span> */}
+          </div>
+          <div className="bg-amber-400 h-24 w-full rounded-sm flex items-center justify-center">
+            {/* <span className="text-amber-900 text-xs">911 Carrera</span> */}
+          </div>
         </div>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="mt-2 text-sm text-gray-600"
-        >
+        <p className="mt-2 text-sm text-gray-600">
           Explore our collection of Porsche 911 models
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
     ),
     pdf: (
-  <motion.div
-    ref={previewRef}
-    initial={{ x: 20, opacity: 0 }}
-    animate={{ x: 0, opacity: 1 }}
-    transition={{ type: "spring", bounce: 0.5 }}
-    className="p-4"
-  >
-    <h3 className="text-lg font-semibold mb-2 text-blue-800">Porsche 911 3D Model Preview</h3>
-    <motion.div
-      initial={{ scale: 0.95 }}
-      animate={{ scale: 1 }}
-      className="bg-blue-50 border border-blue-200 p-3 rounded"
-    >
-      <div className="flex items-center mb-2">
-        <motion.div
-          initial={{ rotate: -10 }}
-          animate={{ rotate: 0 }}
-          className="bg-blue-100 p-2 rounded mr-2"
-        >
-          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-        </motion.div>
-        <div>
-          <p className="font-medium">Porsche_911_Model.glb</p>
-          <p className="text-xs text-gray-500">5.7 MB • High-poly model</p>
+      <div ref={pdfPreviewRef} className="p-4">
+        <h3 className="text-lg font-semibold mb-2 text-blue-800">Porsche 911 3D Model Preview</h3>
+        <div className="bg-blue-50 border border-blue-200 p-3 rounded">
+          <div className="flex items-center mb-2">
+            <div className="bg-blue-100 p-2 rounded mr-2">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-medium">Porsche_911_Model.glb</p>
+              <p className="text-xs text-gray-500">5.7 MB • High-poly model</p>
+            </div>
+          </div>
+          <div className="bg-gray-200 rounded-md h-32 mb-2 flex items-center justify-center">
+            <p className="text-sm text-gray-500">3D Model Preview</p>
+          </div>
+          <p className="text-sm text-gray-700">Interactive 3D model of the Porsche 911 featuring detailed exterior, interior components, and realistic materials.</p>
         </div>
       </div>
-      <div className="bg-gray-200 rounded-md h-32 mb-2 flex items-center justify-center">
-        <p className="text-sm text-gray-500">3D Model Preview</p>
-      </div>
-      <p className="text-sm text-gray-700 line-clamp-3">Interactive 3D model of the Porsche 911 featuring detailed exterior, interior components, and realistic materials.</p>
-    </motion.div>
-  </motion.div>
-),
+    ),
     video: (
-      <motion.div
-        ref={videoPreviewRef}
-        initial={{ rotate: -5, opacity: 0 }} // Changed from rotation to rotate
-        animate={{ rotate: 0, opacity: 1 }}
-        transition={{ type: "spring" }}
-        className="p-4"
-      >
+      <div ref={videoPreviewRef} className="p-4">
         <h3 className="text-lg font-semibold mb-2 text-purple-800">Porsche 911 Video Lecture Preview</h3>
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="bg-purple-50 rounded overflow-hidden"
-        >
+        <div className="bg-purple-50 rounded overflow-hidden">
           <div className="relative pt-[56.25%] bg-purple-200">
-            <motion.div
-              animate={{
-                scale: [1, 1.1, 1],
-                opacity: [0.8, 1, 0.8]
-              }}
-              transition={{
-                repeat: Infinity,
-                duration: 2,
-                ease: "easeInOut"
-              }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
+            <div className="absolute inset-0 flex items-center justify-center">
               <svg className="w-12 h-12 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
               </svg>
-            </motion.div>
+            </div>
           </div>
           <div className="p-3">
             <p className="font-medium">"Porsche 911 Engineering"</p>
@@ -288,8 +249,8 @@ const WikipediaPage: React.FC = () => {
               Watch preview
             </div>
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     )
   };
 
@@ -314,31 +275,6 @@ const WikipediaPage: React.FC = () => {
             className="min-h-screen bg-gray-50 text-gray-800 font-sans leading-normal"
             onMouseMove={handleMouseMove}
           >
-            {/* Header */}
-            {/* <motion.header
-              ref={headerRef}
-              initial={{ y: -50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="bg-white shadow-sm py-4 border-b border-gray-200"
-            >
-              <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center">
-                  <motion.h1
-                    ref={titleRef}
-                    initial={{ opacity: 0 }}
-                    className="text-3xl font-serif font-bold text-gray-900"
-                  >
-                    PorschePedia
-                  </motion.h1>
-                  <button className="md:hidden text-gray-600">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </motion.header> */}
-
             {/* Main Content */}
             <main className="container mx-auto px-4 py-8 flex flex-col md:flex-row">
               {/* Article Content */}
@@ -442,7 +378,7 @@ const WikipediaPage: React.FC = () => {
                 >
                   <h2 className="text-xl font-serif font-bold mb-4 border-b pb-1">Explore More</h2>
                   <div className="grid md:grid-cols-3 gap-4">
-                    <Link to="/gallery">
+                    <Link to="/photo">
                       <motion.div
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.98 }}
@@ -451,43 +387,27 @@ const WikipediaPage: React.FC = () => {
                         onMouseLeave={handleLinkLeave}
                       >
                         <h3 className="font-semibold text-amber-700 flex items-center">
-                          <Frame />
+                          <Frame className="mr-2" />
                           Porsche 911 Gallery
                         </h3>
                         <p className="text-sm text-gray-600 mt-1">Browse our collection of Porsche 911 models</p>
                       </motion.div>
                     </Link>
                     <Link to="/3d">
-                    <motion.div
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="p-4 px-4 border border-gray-200 rounded hover:bg-blue-50 transition-colors cursor-pointer"
-                      onMouseEnter={(e) => handleLinkHover('pdf', e)}
-                      onMouseLeave={handleLinkLeave}
-                    >
-                      <h3 className="font-semibold text-blue-700 flex items-center">
-                       <CuboidIcon />
-                        3d Model
-                      </h3>
-                      <p className="text-sm px-2 text-gray-600 mt-1">Academic studies on Porsche 911 engineering</p>
-                    </motion.div>
-
+                      <motion.div
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="p-4 border border-gray-200 rounded hover:bg-blue-50 transition-colors cursor-pointer"
+                        onMouseEnter={(e) => handleLinkHover('pdf', e)}
+                        onMouseLeave={handleLinkLeave}
+                      >
+                        <h3 className="font-semibold text-blue-700 flex items-center">
+                          <CuboidIcon className="mr-2" />
+                          3D Model
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">Customise your Porsche 911</p>
+                      </motion.div>
                     </Link>
-                    {/* <motion.div
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="p-4 border border-gray-200 rounded hover:bg-purple-50 transition-colors cursor-pointer"
-                      onMouseEnter={(e) => handleLinkHover('video', e)}
-                      onMouseLeave={handleLinkLeave}
-                    >
-                      <h3 className="font-semibold text-purple-700 flex items-center">
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        Video Lectures
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-1">Expert analysis of Porsche 911 technology</p>
-                    </motion.div> */}
                   </div>
                 </motion.section>
 

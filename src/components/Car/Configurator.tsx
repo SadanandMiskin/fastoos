@@ -80,7 +80,7 @@ const Configurator = () => {
 
   return (
     <>
-      <div className="fixed right-1/2 bottom-8 z-50 transform translate-x-1/2">
+      <div className="fixed right-1/2 bottom-8 z-10 transform translate-x-1/2 ">
         <button
           onClick={handleRotationToggle}
           className={`${rotation ? 'bg-red-700' : 'bg-black'} text-white px-6 py-2.5 rounded-full text-sm font-medium transition-colors duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2`}

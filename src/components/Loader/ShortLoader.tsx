@@ -1,24 +1,21 @@
-import { motion } from 'framer-motion'
-// import React from 'react'
+// components/Loader/CarLoader.tsx
+import { Html, useProgress } from "@react-three/drei";
 
-const ShortLoader = () => {
+export function ShortLoader() {
+  const { progress } = useProgress();
   return (
-<>
-
-       <motion.div
-                                   style={{
-                                       width: 30,
-                                       height: 30,
-                                       borderRadius: "50%",
-                                       border: "5px solid rgba(0, 0, 0, 0.1)",
-                                       borderTopColor: "red",
-                                   }}
-                                   animate={{ rotate: 360 }}
-                                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                               />
-</>
-  )
-
+    <Html center>
+      <div className="flex flex-col items-center justify-center">
+        <div className="w-64 h-4 bg-gray-200 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-blue-500 transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="mt-4 text-lg font-medium text-gray-700">
+          Loading car model... {Math.round(progress)}%
+        </p>
+      </div>
+    </Html>
+  );
 }
-
-export default ShortLoader
