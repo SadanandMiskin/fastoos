@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Edu+NSW+ACT+Hand+Pre:wght@400..700&family=Italianno&family=Lovers+Quarrel&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&display=swap');
+
+.App {
+  width: 100vw;
+  height: 100vh;
+  font-family: "Open Sans", sans-serif;
+       color: rgb(167, 167, 167);
+}
+
+/* .configurator{
+  position: fixed;
+  right: 96px;
+  width: 320px;
+  bottom: 25vh;
+  color: white;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.a{
+  font-family: "Italianno", cursive;
+  font-weight: bold;
+  text-align: center; */
+  /* text-transform: uppercase; */
+  /* color: red;
+  font-size: 44px;
+}
+
+.configurator_section_title{
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  text-align: center; */
+  /* background-color: rgb(22, 17, 0); */
+  /* text-transform: uppercase; */
+  /* font-size: 20px;
+  color: rgb(238, 0, 0);
+}
+
+
+.configurator_section_values{
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+} */
+/*
+.item_option {
+  font-size: 16px;
+  color: #acacac;
+  transition: 0.4s color;
+}
+
+.item_colour_preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  border: solid 3px #999999
+}
+
+.item.item-active .item_colour_preview{
+  border: solid 3px white;
+}
+
+.item {
+  transition: 0.4s opacity;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.item.item-active .item_option {
+  color: rgb(255, 255, 255)
+} */
+
+
+/* .details{
+  position: fixed;
+  left: 26px;
+  width: 320px;
+  bottom: 25vh;
+  color: rgb(0, 0, 0);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.details_section_title{
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 24px;
+}
+
+.details_section_values{
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+} */
+.cur {
+  font-family: "Italianno", cursive;
+
+}
+
+.title {
+   font-family: "Cardo", sans-serif;
+   letter-spacing: 42px;
+}
+
+      .animate-fade-in {
+          animation: fadeIn 0.8s ease-out;
+        }
+
+        .animate-scale-in {
+          animation: scaleIn 0.2s ease-out;
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: translate(-50%, -100%) scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: translate(-50%, -100%) scale(1);
+          }
+        }
