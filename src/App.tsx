@@ -14,7 +14,7 @@ export const App = () => {
   window.scrollTo(0, 0);
   return (
       <>
-    <BrowserRouter basename="/fastoos">
+    <BrowserRouter>
     {/* <Header /> */}
     <Routes>
         <Route path='/' element={<HomePage />} />
