@@ -1,7 +1,6 @@
 name: react-app-deploy
 
 on:
-  workflow_dispatch: 
   push:
     branches:
       - main
@@ -12,25 +11,34 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
-    container:
-      image: node:alpine
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
 
       - name: Install Dependencies
         run: npm ci
 
       - name: Build application
         run: npm run build
+
+      - name: Verify build output
+        run: ls -la dist
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
